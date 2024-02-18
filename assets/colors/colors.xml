@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1f277a</color>
+    <color name="lightPrimary">#858de0</color>
+    <color name="secondary">#b3325b</color>
+    <color name="lightSecondary">#e9afc2</color>
+    <color name="grey">#3C3D3E</color>
+    <color name="lightGrey">#E1E0F9</color>
+    <color name="peach">#ff99bc</color>
+    <color name="blue">#7f94f1</color>
+    <color name="purple">#7209B7</color>
+    <color name="lightPurple">#cdb4dc</color>
+   
+</resources>
