@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infosys_test_login_ui/assets/colors.gen.dart';
 import 'package:infosys_test_login_ui/assets/fonts.gen.dart';
+import 'package:infosys_test_login_ui/features/authentication/bloc/auth_bloc/auth_bloc.dart';
 // import 'package:infosys_test_login_ui/features/authentication/authentication.dart';
 
 class SignInPage extends StatefulWidget {
@@ -9,10 +11,10 @@ class SignInPage extends StatefulWidget {
   });
 
   @override
-  State<SignInPage> createState() => _GreetingPageState();
+  State<SignInPage> createState() => _SignInPageState();
 }
 
-class _GreetingPageState extends State<SignInPage> {
+class _SignInPageState extends State<SignInPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   @override
@@ -38,184 +40,220 @@ class _GreetingPageState extends State<SignInPage> {
         leadingWidth: 68,
         centerTitle: false,
       ),
-      body: Stack(children: [
-        Transform.translate(
-          // x,y (-144.0, 224.0)
-          offset: Offset(-0.246 * screenWidth, 0.266 * screenHeight - 56),
-          child: Transform.scale(
-            scale: 1.18,
-            child: Container(
-              height: 1.18 * screenWidth,
-              decoration: const BoxDecoration(
-                color: ColorName.blue,
-                shape: BoxShape.circle,
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.error.toString(),
+                ),
+              ),
+            );
+          }
+          if (state is AuthSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Selamat datang'),
+              ),
+            );
+            // Navigator.pushNamed(context, '/home');
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              ModalRoute.withName('/'),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Stack(children: [
+            Transform.translate(
+              // x,y (-144.0, 224.0)
+              offset: Offset(-0.246 * screenWidth, 0.266 * screenHeight - 56),
+              child: Transform.scale(
+                scale: 1.18,
+                child: Container(
+                  height: 1.18 * screenWidth,
+                  decoration: const BoxDecoration(
+                    color: ColorName.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        Transform.translate(
-          //x,y (59.7, 495.8)
-          offset: Offset(0.219 * screenWidth, 0.525 * screenHeight - 56),
-          child: Transform.scale(
-            scale: 1.18,
-            child: Container(
-              height: 1.18 * screenWidth,
-              decoration: const BoxDecoration(
-                color: ColorName.blue,
-                shape: BoxShape.circle,
+            Transform.translate(
+              //x,y (59.7, 495.8)
+              offset: Offset(0.219 * screenWidth, 0.525 * screenHeight - 56),
+              child: Transform.scale(
+                scale: 1.18,
+                child: Container(
+                  height: 1.18 * screenWidth,
+                  decoration: const BoxDecoration(
+                    color: ColorName.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Column(
+            SingleChildScrollView(
+              child: SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 54),
-                            const Text(
-                              'Welcome Back!',
-                              style: TextStyle(
-                                color: ColorName.purple,
-                                fontFamily: FontFamily.inter,
-                                fontStyle: FontStyle.normal,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 32,
-                                // Adjust based on font size to achieve similar line height
-                                height: 1.18,
-                                letterSpacing: 0,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 54),
+                                const Text(
+                                  'Welcome Back!',
+                                  style: TextStyle(
+                                    color: ColorName.purple,
+                                    fontFamily: FontFamily.inter,
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 32,
+                                    // Adjust based on font size to achieve similar line height
+                                    height: 1.18,
+                                    letterSpacing: 0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'Enter Your Username & Password',
+                                  style: TextStyle(
+                                    color: ColorName.purple,
+                                    fontFamily: FontFamily.inter,
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    height: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 164),
+                                TextField(
+                                  decoration: const InputDecoration(
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black),
+                                    ),
+                                    labelText: "Username",
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: FontFamily.inter,
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 24,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  controller: usernameController,
+                                  onChanged: (value) => setState(() {}),
+                                ),
+                                const SizedBox(height: 52),
+                                TextField(
+                                  decoration: const InputDecoration(
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black),
+                                    ),
+                                    labelText: "Password",
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: FontFamily.inter,
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 24,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  controller: passwordController,
+                                  onChanged: (value) => setState(() {}),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 88),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<AuthBloc>().add(
+                                    AuthLoginRequested(
+                                      username: usernameController.text.trim(),
+                                      password: passwordController.text.trim(),
+                                    ),
+                                  );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(232, 54),
+                              backgroundColor: ColorName.purple,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(30),
+                                  topLeft: Radius.circular(30),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Enter Your Username & Password',
+                            child: const Text(
+                              'LOGIN',
                               style: TextStyle(
-                                color: ColorName.purple,
+                                color: Colors.white,
+                                fontFamily: FontFamily.inder,
+                                fontStyle: FontStyle.normal,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 36,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          const Text(
+                            'Forgotten Passwoard?',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: FontFamily.inter,
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 15,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, "/sign_up");
+                            },
+                            child: const Text(
+                              'Or Create a New Account',
+                              style: TextStyle(
+                                color: Colors.black,
                                 fontFamily: FontFamily.inter,
                                 fontStyle: FontStyle.normal,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 15,
                                 height: 1.2,
                               ),
                             ),
-                            const SizedBox(height: 164),
-                            TextField(
-                              decoration: const InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                labelText: "Username",
-                                labelStyle: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: FontFamily.inter,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 24,
-                                  height: 1.2,
-                                ),
-                              ),
-                              controller: usernameController,
-                              onChanged: (value) => setState(() {}),
-                            ),
-                            const SizedBox(height: 52),
-                            TextField(
-                              decoration: const InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black),
-                                ),
-                                labelText: "Password",
-                                labelStyle: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: FontFamily.inter,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 24,
-                                  height: 1.2,
-                                ),
-                              ),
-                              controller: usernameController,
-                              onChanged: (value) => setState(() {}),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 88),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/home');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(232, 54),
-                          backgroundColor: ColorName.purple,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(30),
-                              topLeft: Radius.circular(30),
-                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'LOGIN',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: FontFamily.inder,
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 36,
-                          ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Forgotten Passwoard?',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: FontFamily.inter,
-                          fontStyle: FontStyle.normal,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 15,
-                          height: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, "/sign_up");
-                        },
-                        child: const Text(
-                          'Or Create a New Account',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: FontFamily.inter,
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 15,
-                            height: 1.2,
-                          ),
-                        ),
-                      ),
+                      const SizedBox(
+                        height: 48,
+                      )
                     ],
                   ),
-                  const SizedBox(
-                    height: 48,
-                  )
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ]),
+          ]);
+        },
+      ),
     );
   }
 }
